@@ -2,7 +2,6 @@
 #include <ranges>
 #include <SplitEngine/ECS/Context.hpp>
 #include <SplitEngine/ECS/System.hpp>
-#include <SplitEngine/Rendering/Sprite.hpp>
 
 #include "SplitEngineShowcase/Component/AudioSource.hpp"
 

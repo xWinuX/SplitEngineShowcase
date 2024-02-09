@@ -1,6 +1,6 @@
 #pragma once
 #include <SplitEngine/ECS/System.hpp>
-#include <SplitEngine/Rendering/Vulkan/Context.hpp>
+#include <SplitEngine/Rendering/Vulkan/Instance.hpp>
 
 #include "SplitEngineShowcase/Component/Camera.hpp"
 #include "SplitEngineShowcase/Component/Transform.hpp"

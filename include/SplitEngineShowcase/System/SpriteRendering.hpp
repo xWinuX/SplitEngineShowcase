@@ -3,14 +3,14 @@
 #include <SplitEngine/Rendering/Material.hpp>
 #include <SplitEngine/Rendering/Model.hpp>
 #include <SplitEngineShowcase/Component/Transform.hpp>
-#include <SplitEngineShowcase/Component/Sprite.hpp>
+#include <SplitEngineShowcase/Component/SpriteRenderer.hpp>
 
 
 using namespace SplitEngine;
 
 namespace SplitEngineShowcase::System
 {
-	class SpriteRenderer : public ECS::System<Component::Transform, Component::Sprite>
+	class SpriteRenderer : public ECS::System<Component::Transform, Component::SpriteRenderer>
 	{
 		public:
 			SpriteRenderer(AssetHandle<Rendering::Material> material, Tools::ImagePacker::PackingData& packingData);
@@ -38,7 +38,7 @@ namespace SplitEngineShowcase::System
 
 			struct TextureData
 			{
-				glm::vec2             PageIndexAndAspectRatio{};
+				glm::vec3             PageIndexAndSize{};
 				alignas(16) glm::vec4 UVs[4];
 			};
 
@@ -49,8 +49,8 @@ namespace SplitEngineShowcase::System
 
 			struct ObjectBuffer
 			{
-				std::array<glm::vec4, 5'120'000> positions;
-				std::array<uint32_t, 5'120'000>  textureIDs;
+				std::array<glm::vec4, 2'048'000> positions;
+				std::array<uint32_t, 2'048'000>  textureIDs;
 				uint32_t                         numObjects;
 			};
 

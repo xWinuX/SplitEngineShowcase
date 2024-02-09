@@ -17,6 +17,6 @@ namespace SplitEngineShowcase::System
 			              transformComponents[i].Position += physicsComponents[i].Velocity * context.DeltaTime;
 		              });
 
-		ImGui::Text("Num Entities: %llu", entities.size());
+		ImGui::Text("Num : %llu", entities.size());
 	}
 }

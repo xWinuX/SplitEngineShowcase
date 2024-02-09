@@ -3,7 +3,6 @@
 #include "SplitEngine/Input.hpp"
 #include "SplitEngine/Debug/Performance.hpp"
 #include "SplitEngine/ECS/System.hpp"
-#include "SplitEngine/Rendering/Sprite.hpp"
 #include "SplitEngine/Tools/ImagePacker.hpp"
 #include "SplitEngine/Tools/ImageSlicer.hpp"
 
@@ -14,13 +13,16 @@
 #include "SplitEngineShowcase/Component/Camera.hpp"
 #include "SplitEngineShowcase/Component/Physics.hpp"
 #include "SplitEngineShowcase/Component/Player.hpp"
-#include "SplitEngineShowcase/Component/Sprite.hpp"
+#include "SplitEngineShowcase/Component/SpriteRenderer.hpp"
 #include "SplitEngineShowcase/Component/Transform.hpp"
 #include "SplitEngineShowcase/System/AudioSourcePlayer.hpp"
 #include "SplitEngineShowcase/System/Camera.hpp"
+#include "SplitEngineShowcase/System/Debug.hpp"
 #include "SplitEngineShowcase/System/Physics.hpp"
 #include "SplitEngineShowcase/System/PlayerController.hpp"
 #include "SplitEngineShowcase/System/SpriteRendering.hpp"
+
+
 
 using namespace SplitEngine;
 using namespace SplitEngineShowcase;
@@ -28,7 +30,8 @@ using namespace SplitEngineShowcase;
 int main()
 {
 	Application application = Application({});
-	application.Initialize();
+
+	application.GetWindow().SetSize(1500, 1000);
 
 	Input::RegisterAxis2D(InputAction::Move, { KeyCode::A, KeyCode::D }, { KeyCode::S, KeyCode::W });
 	Input::RegisterButtonAction(InputAction::Fire, KeyCode::MOUSE_LEFT);
@@ -51,8 +54,8 @@ int main()
 
 	Tools::ImagePacker::PackingData packingData = texturePacker.Pack(2048);
 
-	AssetHandle<Rendering::Sprite> floppaSprite = assetDatabase.CreateAsset<Rendering::Sprite>(Sprite::Floppa, { floppaPackerID, packingData });
-	AssetHandle<Rendering::Sprite> blueBulletSprite = assetDatabase.CreateAsset<Rendering::Sprite>(Sprite::BlueBullet, { blueBulletPackerID, packingData });
+	AssetHandle<SpriteTexture> floppaSprite = assetDatabase.CreateAsset<SpriteTexture>(Sprite::Floppa, { floppaPackerID, packingData });
+	AssetHandle<SpriteTexture> blueBulletSprite = assetDatabase.CreateAsset<SpriteTexture>(Sprite::BlueBullet, { blueBulletPackerID, packingData });
 
 	// Setup ECS
 	ECS::Registry& ecs = application.GetECSRegistry();
@@ -62,7 +65,7 @@ int main()
 	 * 	It's important that every Component, that will be used, is registered before any Entities are created or else the ECS will not work or likely crash the app
 	 */
 	ecs.RegisterComponent<Component::Transform>();
-	ecs.RegisterComponent<Component::Sprite>();
+	ecs.RegisterComponent<Component::SpriteRenderer>();
 	ecs.RegisterComponent<Component::Physics>();
 	ecs.RegisterComponent<Component::AudioSource>();
 	ecs.RegisterComponent<Component::Player>();
@@ -75,6 +78,7 @@ int main()
 	 * 	Systems can be registered multiple times and parameters get forwarded to the systems constructor
 	 * 	Systems can be registered as the game is running, so no need to preregister all at the start if you don't want to
 	 */
+	ecs.AddSystem<System::Debug>(ECS::Stage::Gameplay, -1);
 	ecs.AddSystem<System::Physics>(ECS::Stage::Gameplay, 0);
 	ecs.AddSystem<System::AudioSourcePlayer>(ECS::Stage::Gameplay, 0);
 	ecs.AddSystem<System::PlayerController>(ECS::Stage::Gameplay, 0, blueBulletSprite);
@@ -82,9 +86,9 @@ int main()
 	ecs.AddSystem<System::SpriteRenderer>(ECS::Stage::Rendering, 0, material, packingData);
 
 	// Create entities
-	for (int i = 0; i < 1'000'000; ++i) { ecs.CreateEntity<Component::Transform, Component::Sprite>({ glm::ballRand(100.0f), 0.0f }, { floppaSprite, 1.0f, 0 }); }
+	for (int i = 0; i < 1'000; ++i) { ecs.CreateEntity<Component::Transform, Component::SpriteRenderer>({ glm::ballRand(100.0f), 0.0f }, { floppaSprite, 1.0f, 0 }); }
 
-	uint64_t playerEntity = ecs.CreateEntity<Component::Transform, Component::Physics, Component::Player, Component::Sprite>({}, {}, {}, { floppaSprite, 1.0f });
+	uint64_t playerEntity = ecs.CreateEntity<Component::Transform, Component::Physics, Component::Player, Component::SpriteRenderer>({}, {}, {}, { floppaSprite, 1.0f });
 
 	ecs.CreateEntity<Component::Transform, Component::Camera>({}, { playerEntity });
 

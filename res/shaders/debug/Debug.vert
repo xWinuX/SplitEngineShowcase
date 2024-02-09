@@ -9,7 +9,7 @@ layout(location = 2) out int textureIndex;
 #include "../globals.glsl"
 
 struct TextureData {
-    vec2 pageIndexAndAspectRatio;
+    vec3 pageIndexAndSize;
     vec4[4] uvs;
 };
 
@@ -29,8 +29,8 @@ layout(std140, set = 1, binding = 0) readonly buffer si_TextureStore {
 } textureStore;
 
 layout(std430, set = 2, binding = 0) readonly buffer ObjectBuffer {
-    vec4 positions[5120000];
-    uint textureIDs[5120000];
+    vec4 positions[2048000];
+    uint textureIDs[2048000];
     uint numObjects;
 } objectBuffer;
 
@@ -50,13 +50,12 @@ void main() {
 
     mat2 rotationMatrix = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
 
-    vec2 rotatedPosition = rotationMatrix * (POSITIONS[inIndex] * vec2(textureData.pageIndexAndAspectRatio.y, 1.0));
+    vec2 rotatedPosition = rotationMatrix * (POSITIONS[inIndex] * vec2(textureData.pageIndexAndSize.y, textureData.pageIndexAndSize.z));
 
     vec3 adjustedPosition = vec3(rotatedPosition + position.xy, position.z);
-
 
     gl_Position = cameraProperties.viewProj *  vec4(adjustedPosition, 1.0);
     fragColor = vec4(1.0f, 1.0f, 1.0f, float(i < objectBuffer.numObjects));
     fragTexCoord = textureData.uvs[inIndex].xy;
-    textureIndex = int(textureData.pageIndexAndAspectRatio.x);
+    textureIndex = int(textureData.pageIndexAndSize.x);
 }

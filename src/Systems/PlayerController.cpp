@@ -1,20 +1,23 @@
 #include "SplitEngineShowcase/System/PlayerController.hpp"
 
+#include <SplitEngine/Application.hpp>
 #include <SplitEngine/Input.hpp>
 
 #include "SplitEngineShowcase/Assets.hpp"
-#include "SplitEngineShowcase/Component/Sprite.hpp"
+#include "SplitEngineShowcase/Component/SpriteRenderer.hpp"
+
+#include "imgui.h"
 
 namespace SplitEngineShowcase::System
 {
-	PlayerController::PlayerController(const AssetHandle<Rendering::Sprite> bulletSprite):
+	PlayerController::PlayerController(const AssetHandle<SpriteTexture> bulletSprite):
 		_bulletSprite(bulletSprite) {}
 
-	void PlayerController::Execute(Component::Transform* transformComponents,
-		Component::Player* playerComponents,
-		Component::Physics* physicsComponents,
-		std::vector<uint64_t>& entities,
-		ECS::Context& context)
+	void PlayerController::Execute(Component::Transform*  transformComponents,
+	                               Component::Player*     playerComponents,
+	                               Component::Physics*    physicsComponents,
+	                               std::vector<uint64_t>& entities,
+	                               ECS::Context&          context)
 	{
 		for (int i = 0; i < entities.size(); ++i)
 		{
@@ -31,9 +34,9 @@ namespace SplitEngineShowcase::System
 
 			if (Input::GetButtonActionDown(InputAction::Fire))
 			{
-				context.Registry->CreateEntity<Component::Transform, Component::Physics, Component::Sprite>({ transformComponent.Position, transformComponent.Rotation },
-				                                                                                            { false, glm::vec3(direction.x, -direction.y, 0.0f) * 10.0f },
-				                                                                                            { _bulletSprite, 5.0f });
+				context.Registry->CreateEntity<Component::Transform, Component::Physics, Component::SpriteRenderer>({ transformComponent.Position, transformComponent.Rotation },
+				                                                                                                    { false, glm::vec3(direction.x, -direction.y, 0.0f) * 3.0f },
+				                                                                                                    { _bulletSprite, 5.0f });
 			}
 		}
 	}

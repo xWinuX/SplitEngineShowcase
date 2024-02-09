@@ -13,7 +13,7 @@ add_executable(
         src/Systems/SpriteRendering.cpp
         include/SplitEngineShowcase/System/SpriteRendering.hpp
         include/SplitEngineShowcase/Component/Transform.hpp
-        include/SplitEngineShowcase/Component/Sprite.hpp
+        include/SplitEngineShowcase/Component/SpriteRenderer.hpp
         include/SplitEngineShowcase/Component/Player.hpp
         include/SplitEngineShowcase/Component/Camera.hpp
         src/Systems/Camera.cpp
@@ -27,6 +27,10 @@ add_executable(
         src/Systems/AudioSourcePlayer.cpp
         include/SplitEngineShowcase/System/AudioSourcePlayer.hpp
         include/SplitEngineShowcase/Assets.hpp
+        src/SpriteTexture.cpp
+        include/SplitEngineShowcase/SpriteTexture.hpp
+        src/Systems/Debug.cpp
+        include/SplitEngineShowcase/System/Debug.hpp
 )
 
 target_include_directories(SplitEngineShowcase PRIVATE include)

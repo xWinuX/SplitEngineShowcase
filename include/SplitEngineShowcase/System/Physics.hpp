@@ -1,7 +1,6 @@
 #pragma once
 #include <ranges>
 #include <SplitEngine/ECS/System.hpp>
-#include <SplitEngine/Rendering/Sprite.hpp>
 
 #include "SplitEngineShowcase/Component/Physics.hpp"
 #include "SplitEngineShowcase/Component/Transform.hpp"

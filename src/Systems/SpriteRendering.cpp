@@ -1,6 +1,8 @@
 #include "SplitEngineShowcase/System/SpriteRendering.hpp"
 
 #include <execution>
+#include <imgui.h>
+#include <SplitEngine/Application.hpp>
 #include <SplitEngine/Rendering/Model.hpp>
 #include <SplitEngine/Rendering/Texture2D.hpp>
 
@@ -27,12 +29,12 @@ namespace SplitEngineShowcase::System
 		// Prepare texture page info data for shader upload
 		for (int i = 0; i < packingData.PackingInfos.size(); ++i)
 		{
-			Tools::ImagePacker::PackingInfo packingInfo       = packingData.PackingInfos[i];
-			textureStore->Textures[i].PageIndexAndAspectRatio = { packingInfo.PageIndex, packingInfo.AspectRatio };
-			textureStore->Textures[i].UVs[0]                  = { packingInfo.UVTopLeft, 0.0f, 0.0f };
-			textureStore->Textures[i].UVs[1]                  = { packingInfo.UVTopRight, 0.0f, 0.0f };
-			textureStore->Textures[i].UVs[2]                  = { packingInfo.UVBottomLeft, 0.0f, 0.0f };
-			textureStore->Textures[i].UVs[3]                  = { packingInfo.UVBottomRight, 0.0f, 0.0f };
+			Tools::ImagePacker::PackingInfo packingInfo = packingData.PackingInfos[i];
+			textureStore->Textures[i].PageIndexAndSize  = { packingInfo.PageIndex, packingInfo.Size.x / 100.0f, packingInfo.Size.y / 100.0f };
+			textureStore->Textures[i].UVs[0]            = { packingInfo.UVTopLeft, 0.0f, 0.0f };
+			textureStore->Textures[i].UVs[1]            = { packingInfo.UVTopRight, 0.0f, 0.0f };
+			textureStore->Textures[i].UVs[2]            = { packingInfo.UVBottomLeft, 0.0f, 0.0f };
+			textureStore->Textures[i].UVs[3]            = { packingInfo.UVBottomRight, 0.0f, 0.0f };
 		}
 
 		// Actually create shader pages
@@ -69,8 +71,8 @@ namespace SplitEngineShowcase::System
 
 		for (const auto& archetype: archetypes)
 		{
-			Component::Transform* transformComponents = archetype->GetComponents<Component::Transform>();
-			Component::Sprite*    spriteComponents    = archetype->GetComponents<Component::Sprite>();
+			Component::Transform*      transformComponents = archetype->GetComponents<Component::Transform>();
+			Component::SpriteRenderer* spriteComponents    = archetype->GetComponents<Component::SpriteRenderer>();
 
 			std::vector<uint64_t>& entities = archetype->Entities;
 
@@ -82,10 +84,10 @@ namespace SplitEngineShowcase::System
 			              _indexes.end(),
 			              [this, objectBuffer, spriteComponents, context, &numEntities](size_t i)
 			              {
-				              Component::Sprite& spriteAnimatorComponent = spriteComponents[i];
-				              Rendering::Sprite* sprite                  = spriteAnimatorComponent.SpriteAsset.Get();
-				              size_t             numSubSprites           = sprite->_numSubSprites;
-				              float              animationSpeed          = spriteAnimatorComponent.AnimationSpeed;
+				              Component::SpriteRenderer& spriteAnimatorComponent = spriteComponents[i];
+				              SpriteTexture*             sprite                  = spriteAnimatorComponent.SpriteTexture.Get();
+				              size_t                     numSubSprites           = sprite->_numSubSprites;
+				              float                      animationSpeed          = spriteAnimatorComponent.AnimationSpeed;
 
 				              if (numSubSprites > 1 && animationSpeed > 0.0f)
 				              {
@@ -108,7 +110,7 @@ namespace SplitEngineShowcase::System
 
 		objectBuffer->numObjects = numEntities;
 
-		vk::CommandBuffer commandBuffer = context.RenderingContext->GetCommandBuffer();
+		vk::CommandBuffer commandBuffer = context.RenderingContext->GetPhysicalDevice().GetDevice().GetCommandBuffer();
 
 		// Bind global
 		Rendering::Shader::UpdateGlobal();

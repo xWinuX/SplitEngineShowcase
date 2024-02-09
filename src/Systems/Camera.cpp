@@ -19,8 +19,8 @@ namespace SplitEngineShowcase::System
 			{
 				transformComponent.Position = context.Registry->GetComponent<Component::Transform>(cameraComponent.TargetEntity).Position - glm::vec3(0.0f, 0.0f, 10.0f);
 
-				const uint32_t width  = Rendering::Vulkan::Context::GetDevice()->GetSwapchain().GetExtend().width;
-				const uint32_t height = Rendering::Vulkan::Context::GetDevice()->GetSwapchain().GetExtend().height;
+				const uint32_t width  = context.RenderingContext->GetPhysicalDevice().GetDevice().GetSwapchain().GetExtend().width;
+				const uint32_t height = context.RenderingContext->GetPhysicalDevice().GetDevice().GetSwapchain().GetExtend().height;
 
 				cameraUBO->view = glm::lookAt(transformComponent.Position, transformComponent.Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
